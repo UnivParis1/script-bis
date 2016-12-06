@@ -55,7 +55,7 @@
         ];
 
         protected $originalFile = "original.csv";
-        protected $exportFile = "export_file.xls"; # or .tsv but .xls is more widely known
+        protected $exportFile = "export_file.csv";
 
         function __construct($originalFile=null, $exportFile=null) {
             if ($originalFile) {
@@ -155,6 +155,7 @@
 
             while (($line = fgets($originalFile)) !== false) {
                 $data = [];
+                $line = iconv("WINDOWS-1252", "UTF-8", $line);
                 // process the line read
                 $line = substr(trim($line), 1, -1);
                 $values = explode("\\,\\", $line);
@@ -315,7 +316,7 @@
     class BisSource2 extends BisElement {
 
         protected function formatData($matches) {
-            $format = "Bibliothèque Interuniversitaire de la Sorbonne, cote : %s";
+            $format = "Bibliothèque interuniversitaire de la Sorbonne, cote : %s";
             return sprintf($format, $matches[0]);
         }
     }
@@ -401,12 +402,12 @@
             // 5.
             $remainingTerms = explode('  ', $data);
             $this->flags['title'] = $remainingTerms[0] ?: 0;
-            $this->flags['city'] = $remaingTerms[1] ?: 0;
+            $this->flags['city'] = $remainingTerms[1] ?: 0;
             
             // if $remainingTerms[2] log error? #todo
 
             // construct element with all the parts found
-            $formattedElement = $this->flags['title'] ?: '';
+            $formattedElement = trim($this->flags['title']) ?: '';
 
             if ($date = $this->flags['date']) {
                 $formattedElement .= ' (' . $date . ')';
